@@ -4,22 +4,23 @@ from src.domain.validator import ArtistBaseModel
 from src.domain.response.model import ResponseModel
 from src.domain.enums.response_internal_code import InternalCode
 from src.services.artist import ArtistService
+
 # Standards
 from http import HTTPStatus
 
 # Third party
 from flask import Flask, request, Response
-
+from json import dumps
 app = Flask("Mjolnir")
 
 
 @app.route('/')
 async def hello_world() -> Response:
-    response = "Mjolnir API is now working!"
-    return Response(response, HTTPStatus.OK)
+    response = {"result": "Mjolnir API is now working!"}
+    return Response(dumps(response), HTTPStatus.OK)
 
 
-@app.route('/top-songs/<string:artist_name>')
+@app.route('/top-songs/<int:artist_id>')
 async def get_artist_songs(artist_id: int) -> Response:
     cache = request.args.get("cache", True)
     try:
@@ -31,6 +32,7 @@ async def get_artist_songs(artist_id: int) -> Response:
             code=InternalCode.SUCCESS
         ).build_http_response(status=HTTPStatus.OK)
         return response
+
     except NotFoundArtistId as ex:
         response = ResponseModel(
             success=True,
@@ -39,6 +41,7 @@ async def get_artist_songs(artist_id: int) -> Response:
             code=InternalCode.INVALID_PARAMS
         ).build_http_response(status=HTTPStatus.OK)
         return response
+
     except ValueError as ex:
         response = ResponseModel(
             success=False,
@@ -47,6 +50,7 @@ async def get_artist_songs(artist_id: int) -> Response:
             code=InternalCode.INVALID_PARAMS
         ).build_http_response(status=HTTPStatus.BAD_REQUEST)
         return response
+
     except Exception as ex:
         response = ResponseModel(
             success=False,

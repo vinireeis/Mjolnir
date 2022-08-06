@@ -8,7 +8,7 @@ class ArtistService:
 
     async def get_ten_most_popular_songs(self):
         songs_result = await MusicApi.get_ten_most_popular_musics_on_genius(artist_id=self.artist_id)
-        songs_result_treated = ArtistModel(songs_result=songs_result).get_songs_template()
+        songs_result_treated = ArtistModel(songs_result=songs_result, artist_id=self.artist_id).get_songs_template()
 
 
         pass

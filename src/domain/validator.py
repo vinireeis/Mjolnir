@@ -15,7 +15,6 @@ class ArtistBaseModel(BaseModel, extra=Extra.forbid):
         params = {
             "artist_id": artist_id,
             "cache": cache,
-            "id_transaction": uuid4(),
         }
         artist_validated = ArtistBaseModel(**params).dict()
         return artist_validated
