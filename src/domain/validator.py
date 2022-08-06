@@ -3,17 +3,17 @@ from typing import Dict
 from uuid import uuid4
 
 # Third party
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 
-class ArtistBaseModel(BaseModel):
+class ArtistBaseModel(BaseModel, extra=Extra.forbid):
     artist_name: str
-    cache: bool
+    cache: bool = True
 
     @classmethod
-    async def unpack_raw_params(cls, cache, artist_name) -> Dict:
+    async def unpack_raw_params(cls, cache, artist_id) -> Dict:
         params = {
-            "artist_name": artist_name,
+            "artist_id": artist_id,
             "cache": cache,
             "id_transaction": uuid4(),
         }

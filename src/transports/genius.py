@@ -16,15 +16,15 @@ class MusicApi:
     async def get_ten_most_popular_musics_on_genius(artist_id: int) -> dict:
         async with httpx.AsyncClient() as client:
             request_response = await client.get(
-                f"{config('GENIUS_API_BASE_URL')}/artists/{artist_id}/songs",
+                f"https://{config('GENIUS_API_BASE_URL')}/artists/{artist_id}/songs",
                 headers={
                     "Accept": "application/json",
-                    "Host": "api.genius.com",
+                    "Host": config('GENIUS_API_BASE_URL'),
                     "Authorization": f"Bearer {config('GENIUS_CLIENT_ACCESS_TOKEN')}"
                 },
                 params={
                     "sort": "popularity",
-                    "per_page": 10
+                    "per_page": config("MUSICS_PER_PAGE")
                 }
             )
         await MusicApi.__result_map_from_request_response(request_response=request_response)
