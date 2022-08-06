@@ -1,3 +1,7 @@
+# Mjolnir
+# from ..domain.exceptions import NotFoundArtistId
+from src.domain.exceptions import NotFoundArtistId
+
 # Standards
 from http import HTTPStatus
 
@@ -9,10 +13,10 @@ import httpx
 class MusicApi:
 
     @staticmethod
-    async def get_ten_most_popular_musics(artist_id: int) -> dict:
+    async def get_ten_most_popular_musics_on_genius(artist_id: int) -> dict:
         async with httpx.AsyncClient() as client:
             request_response = await client.get(
-                f"https://api.genius.com/artists/{artist_id}/songs",
+                f"{config('GENIUS_API_BASE_URL')}/artists/{artist_id}/songs",
                 headers={
                     "Accept": "application/json",
                     "Host": "api.genius.com",
@@ -23,8 +27,6 @@ class MusicApi:
                     "per_page": 10
                 }
             )
-
-        print(type(request_response))
         await MusicApi.__result_map_from_request_response(request_response=request_response)
         ten_most_popular_musics = request_response.json()
         return ten_most_popular_musics
@@ -32,19 +34,29 @@ class MusicApi:
     @staticmethod
     async def __result_map_from_request_response(request_response: httpx.Response):
         response_map = {
-            HTTPStatus.INTERNAL_SERVER_ERROR: "await MusicApi.__raise(Exception)",
-            HTTPStatus.BAD_REQUEST: "await MusicApi.__raise(Exception)",
-            HTTPStatus.OK: True,
+            HTTPStatus.INTERNAL_SERVER_ERROR: MusicApi.__raise_internal_server_error,
+            HTTPStatus.BAD_REQUEST: MusicApi.__raise_bad_request,
+            HTTPStatus.NOT_FOUND: MusicApi.__raise_not_found,
+            HTTPStatus.OK: lambda: True,
         }
         status_code = request_response.status_code
-        result = response_map.get(status_code, 500)
-        return result
+        result = response_map.get(status_code, MusicApi.__raise_internal_server_error)
+        return result()
 
     @staticmethod
-    async def __raise(exception) -> Exception:
-        raise exception
+    def __raise_internal_server_error() -> Exception:
+        raise Exception
+
+    @staticmethod
+    def __raise_bad_request() -> ValueError:
+        raise ValueError
+
+    @staticmethod
+    def __raise_not_found() -> NotFoundArtistId:
+        raise NotFoundArtistId
+
 
 
 import asyncio
 from pprint import pprint
-pprint(asyncio.run(MusicApi.get_ten_most_popular_musics(1325)))
+pprint(asyncio.run(MusicApi.get_ten_most_popular_musics_on_genius(1534)))
