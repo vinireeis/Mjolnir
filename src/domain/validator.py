@@ -7,7 +7,7 @@ from pydantic import BaseModel, Extra
 
 
 class ArtistBaseModel(BaseModel, extra=Extra.forbid):
-    artist_id: str
+    artist_id: int
     cache: bool = True
 
     @classmethod

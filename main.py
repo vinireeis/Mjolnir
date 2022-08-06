@@ -10,14 +10,18 @@ from http import HTTPStatus
 
 # Third party
 from flask import Flask, request, Response
-from json import dumps
+from loguru import logger
 app = Flask("Mjolnir")
 
 
 @app.route('/')
 async def hello_world() -> Response:
-    response = {"result": "Mjolnir API is now working!"}
-    return Response(dumps(response), HTTPStatus.OK)
+    response = ResponseModel(
+        success=True,
+        message= "Mjolnir API is now working!",
+        code=InternalCode.SUCCESS
+    ).build_http_response(status=HTTPStatus.OK)
+    return response
 
 
 @app.route('/top-songs/<int:artist_id>')
@@ -34,6 +38,7 @@ async def get_artist_songs(artist_id: int) -> Response:
         return response
 
     except NotFoundArtistId as ex:
+        logger.error(ex)
         response = ResponseModel(
             success=True,
             message="No artist was found with this id",
@@ -43,6 +48,7 @@ async def get_artist_songs(artist_id: int) -> Response:
         return response
 
     except ValueError as ex:
+        logger.error(ex)
         response = ResponseModel(
             success=False,
             message="Invalid params",
@@ -52,6 +58,7 @@ async def get_artist_songs(artist_id: int) -> Response:
         return response
 
     except Exception as ex:
+        logger.error(ex)
         response = ResponseModel(
             success=False,
             message="An unexpected error has occurred",

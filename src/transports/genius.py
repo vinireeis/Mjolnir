@@ -7,6 +7,7 @@ from http import HTTPStatus
 
 # Third party
 from decouple import config
+from loguru import logger
 import httpx
 
 
@@ -44,19 +45,20 @@ class MusicApi:
         return result()
 
     @staticmethod
-    def __raise_internal_server_error() -> Exception:
+    def __raise_internal_server_error():
+        logger.error("Error on api partners")
         raise Exception
 
     @staticmethod
-    def __raise_bad_request() -> ValueError:
+    def __raise_bad_request():
+        logger.info("Error on get songs, invalid params")
         raise ValueError
 
     @staticmethod
-    def __raise_not_found() -> NotFoundArtistId:
+    def __raise_not_found():
+        logger.info("No found any artist with this ID")
         raise NotFoundArtistId
 
-
-
-import asyncio
-from pprint import pprint
-pprint(asyncio.run(MusicApi.get_ten_most_popular_musics_on_genius(357)))
+# import asyncio
+# from pprint import pprint
+# pprint(asyncio.run(MusicApi.get_ten_most_popular_musics_on_genius(357)))
