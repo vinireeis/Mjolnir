@@ -16,8 +16,8 @@ async def hello_world() -> Response:
     return Response(response, HTTPStatus.OK)
 
 
-@app.route('/top-musics/<string:artist_name>')
-async def get_top_ten_musics(artist_id: int) -> Response:
+@app.route('/top-songs/<string:artist_name>')
+async def get_artist_songs(artist_id: int) -> Response:
     cache = request.args.get("cache", True)
     try:
         artist_validated = await ArtistBaseModel.unpack_raw_params(cache=cache, artist_id=artist_id)
