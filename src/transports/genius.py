@@ -59,4 +59,4 @@ class MusicApi:
 
 import asyncio
 from pprint import pprint
-pprint(asyncio.run(MusicApi.get_ten_most_popular_musics_on_genius(1534)))
+pprint(asyncio.run(MusicApi.get_ten_most_popular_musics_on_genius(357)))

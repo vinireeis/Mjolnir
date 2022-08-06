@@ -1,6 +1,9 @@
 # Mjolnir
+from src.domain.exceptions import NotFoundArtistId
 from src.domain.validator import ArtistBaseModel
-
+from src.domain.response.model import ResponseModel
+from src.domain.enums.response_internal_code import InternalCode
+from src.services.artist import ArtistService
 # Standards
 from http import HTTPStatus
 
@@ -21,11 +24,36 @@ async def get_artist_songs(artist_id: int) -> Response:
     cache = request.args.get("cache", True)
     try:
         artist_validated = await ArtistBaseModel.unpack_raw_params(cache=cache, artist_id=artist_id)
-        return Response("ok", HTTPStatus.OK)
+        result = await ArtistService(artist_validated=artist_validated).get_ten_most_popular_songs()
+        response = ResponseModel(
+            success=True,
+            result=result,
+            code=InternalCode.SUCCESS
+        ).build_http_response(status=HTTPStatus.OK)
+        return response
+    except NotFoundArtistId as ex:
+        response = ResponseModel(
+            success=True,
+            message="No artist was found with this id",
+            result={},
+            code=InternalCode.INVALID_PARAMS
+        ).build_http_response(status=HTTPStatus.OK)
+        return response
     except ValueError as ex:
-        return Response("Invalid params", HTTPStatus.BAD_REQUEST)
+        response = ResponseModel(
+            success=False,
+            message="Invalid params",
+            result={},
+            code=InternalCode.INVALID_PARAMS
+        ).build_http_response(status=HTTPStatus.BAD_REQUEST)
+        return response
     except Exception as ex:
-        return Response("An unexpected error has occurred", 500)
+        response = ResponseModel(
+            success=False,
+            message="An unexpected error has occurred",
+            code=InternalCode.INTERNAL_SERVER_ERROR
+        ).build_http_response(status=HTTPStatus.BAD_REQUEST)
+        return response
 
 
 app.run(debug=True)
