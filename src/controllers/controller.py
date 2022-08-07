@@ -1,5 +1,5 @@
 # Mjolnir
-from ..domain.exceptions import NotFoundArtistId
+from ..domain.exceptions import NotFoundArtistId, PartnerError
 from ..domain.validator import ArtistBaseModel
 from ..domain.response.model import ResponseModel
 from ..domain.enums.response_internal_code import InternalCode
@@ -49,12 +49,20 @@ async def get_artist_songs(artist_id: int) -> Response:
         ).build_http_response(status=HTTPStatus.OK)
         return response
 
+    except PartnerError as ex:
+        logger.error(ex)
+        response = ResponseModel(
+            success=True,
+            message="An unexpected error has occurred",
+            code=InternalCode.PARTNERS_ERROR,
+        ).build_http_response(status=HTTPStatus.INTERNAL_SERVER_ERROR)
+        return response
+
     except ValueError as ex:
         logger.error(ex)
         response = ResponseModel(
             success=False,
             message="Invalid params",
-            result={},
             code=InternalCode.INVALID_PARAMS,
         ).build_http_response(status=HTTPStatus.BAD_REQUEST)
         return response
@@ -65,5 +73,5 @@ async def get_artist_songs(artist_id: int) -> Response:
             success=False,
             message="An unexpected error has occurred",
             code=InternalCode.INTERNAL_SERVER_ERROR,
-        ).build_http_response(status=HTTPStatus.BAD_REQUEST)
+        ).build_http_response(status=HTTPStatus.INTERNAL_SERVER_ERROR)
         return response
