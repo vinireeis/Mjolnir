@@ -45,7 +45,7 @@ python3 -m venv env
     ``` 
 
 ### Step three
-#### CriaÃ§Ã£o das variÃ¡veis de ambiente
+#### Create environment variables
 
 1. Create a `.env` file in the project root, following this template:
 
@@ -64,11 +64,11 @@ AWS_TABLE_NAME=FILL_THIS_WITH_TABLE_NAME
 
 #### **Endpoint:**
 
-# `/top-songs/<int:artist_id>`
+## `/top-songs/<int:artist_id>`
 
 > _Endpoint to get the 10 most popular songs by a given artist_
 
-## Requesition
+## Requisition
 
 #### **request template:**
 
