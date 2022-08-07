@@ -1,6 +1,5 @@
 # Jormungandr
-# from ...infrastrcutures.redis.infrastructure import RedisInfrastructure
-from src.infrastrcutures.redis.infrastructure import RedisInfrastructure
+from ...infrastrcutures.redis.infrastructure import RedisInfrastructure
 
 # Third party
 from decouple import config
@@ -8,7 +7,6 @@ from loguru import logger
 
 
 class RedisRepository:
-
     @staticmethod
     async def get(key: str) -> bytes:
         redis = await RedisInfrastructure.get_client()
@@ -28,7 +26,9 @@ class RedisRepository:
             return result
 
         except Exception as ex:
-            logger.error(ex=ex, __message=f"RedisRepository::set::error on trying to set data")
+            logger.error(
+                ex=ex, __message=f"RedisRepository::set::error on trying to set data"
+            )
             raise ex
 
     @staticmethod
@@ -37,5 +37,8 @@ class RedisRepository:
         try:
             await redis.delete(key)
         except Exception as ex:
-            logger.error(ex=ex, __message=f"RedisRepository::delete::error on trying to delete key")
+            logger.error(
+                ex=ex,
+                __message=f"RedisRepository::delete::error on trying to delete key",
+            )
             raise ex
