@@ -1,0 +1,2 @@
+class NotFoundArtistId(Exception):
+    pass
