@@ -62,6 +62,16 @@ AWS_REGION_NAME=FILL_THIS_WITH_AWS_REGION
 AWS_TABLE_NAME=FILL_THIS_WITH_TABLE_NAME
 ~~~
 
+### Step four
+#### Run project
+
+1. To start the hypercorn server you need to be at the project root in the terminal and run the following command
+ ~~~
+   hypercorn --bind '0.0.0.0:5000' main.py:asgi_app
+ ~~~
+
+2. You can change the HOST and PORT as you wish.
+
 #### **Endpoint:**
 
 ## `/top-songs/<int:artist_id>`
