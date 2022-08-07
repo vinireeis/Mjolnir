@@ -72,21 +72,21 @@ AWS_TABLE_NAME=FILL_THIS_WITH_TABLE_NAME
 
 2. You can change the HOST and PORT as you wish.
 
-#### **Endpoint:**
+## **Endpoint:**
 
-## `/top-songs/<int:artist_id>`
+### "/top-songs/artist_id"
 
 > _Endpoint to get the 10 most popular songs by a given artist_
 
 ## Requisition
 
-#### **request template:**
-
-**Route HTTP:** `http:{host}/top-songs/357`
-
+#### **request template on route HTTP:**
+~~~
+http:{host}/top-songs/357
+~~~
 > _Artist id must be informed at the end of the route /top-songs/artistid_
 
-**no request body required:**
+>_no request body required_
 
 ## Response
 
@@ -103,16 +103,16 @@ AWS_TABLE_NAME=FILL_THIS_WITH_TABLE_NAME
 
 **internal_code available:**
 
-- **SUCCESS:**
-  Code: 0
-- **INVALID_PARAMS:**
-  Code: 10
-- **PARTNERS_ERROR:**
-  Code: 21
-- **DATA_NOT_FOUND:**
-  Code: 99
-- **INTERNAL_SERVER_ERROR:**
-  Code: 100
+- **SUCCESS=**
+  0
+- **INVALID_PARAMS=**
+  10
+- **PARTNERS_ERROR=**
+  21
+- **DATA_NOT_FOUND=**
+  99
+- **INTERNAL_SERVER_ERROR=**
+  100
 
 #### **it's possible to provide a query_string for caching on Redis:**
 
@@ -120,14 +120,16 @@ AWS_TABLE_NAME=FILL_THIS_WITH_TABLE_NAME
 
 - False
 - True
-
-`http:{host}/top-songs/357?cache=False`
+~~~bash
+http:{host}/top-songs/357?cache=False
+~~~
 
 ## Example
 
 #### Request:
-
-`http:{host}/top-songs/357`
+~~~bash
+http:{host}/top-songs/357
+~~~
 
 #### Response:
 
