@@ -1,5 +1,5 @@
 # Mjolnir
-from ..domain.exceptions import NotFoundArtistId
+from ..domain.exceptions import NotFoundArtistId, PartnerError
 
 # Standards
 from http import HTTPStatus
@@ -22,7 +22,7 @@ class MusicApi:
                         "Host": config("GENIUS_API_BASE_URL"),
                         "Authorization": f"Bearer {config('GENIUS_CLIENT_ACCESS_TOKEN')}",
                     },
-                    params={"sort": "popularity", "per_page": config("MUSICS_PER_PAGE")},
+                    params={"sort": config("GENIUS_SORTED"), "per_page": config("GENIUS_MUSICS_PER_PAGE")},
                 )
             await MusicApi.__result_map_from_request_response(
                 request_response=request_response
@@ -30,7 +30,8 @@ class MusicApi:
             ten_most_popular_musics = request_response.json()
             return ten_most_popular_musics
         except Exception as ex:
-            raise(ex)
+            logger.error(ex=ex)
+            raise PartnerError
 
     @staticmethod
     async def __result_map_from_request_response(request_response: httpx.Response):
@@ -47,7 +48,7 @@ class MusicApi:
     @staticmethod
     def __raise_internal_server_error():
         logger.error("Error on api partners")
-        raise Exception
+        raise PartnerError
 
     @staticmethod
     def __raise_bad_request():
