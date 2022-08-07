@@ -3,9 +3,9 @@ from loguru import logger
 
 
 class ArtistModel:
-    def __init__(self, songs_result: dict, artist_id: int):
+    def __init__(self, songs_result_from_genius: dict, artist_id: int):
         self.artist_id = artist_id
-        self.songs = songs_result.get("response", {}).get("songs", [])
+        self.songs = songs_result_from_genius.get("response", {}).get("songs", [])
         self.artist_name = self._get_artist_name()
         self.transaction_id = uuid4()
 
