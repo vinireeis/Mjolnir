@@ -6,7 +6,7 @@ from .stubs import stub_artist_validated
 from pytest import fixture
 
 
-@fixture(scope='function')
+@fixture(scope="function")
 def setup_artist_service():
     artist_service = ArtistService(artist_validated=stub_artist_validated)
     return artist_service

@@ -1,5 +1,9 @@
-#Mjolnir
-from .stubs import stub_songs_treated_template, stub_songs_result_genius, stub_dynamodb_item
+# Mjolnir
+from .stubs import (
+    stub_treated_songs_template,
+    stub_songs_result_genius,
+    stub_encode_result
+)
 
 # Standards
 from unittest.mock import patch
@@ -9,40 +13,66 @@ import pytest
 
 
 @pytest.mark.asyncio
-@patch('src.services.artist.ArtistService._get_or_set_artist_songs_on_redis', return_value=stub_songs_treated_template)
-async def test_when_success_to_get_artist_then_returns_ten_most_popular_songs(mock_get_or_set_on_redis, setup_artist_service):
+@patch(
+    "src.services.artist.ArtistService._get_or_set_artist_songs_on_redis",
+    return_value=stub_treated_songs_template,
+)
+async def test_when_success_to_get_artist_then_returns_ten_most_popular_songs(
+    mock_get_or_set_on_redis, setup_artist_service
+):
     songs_treated_template = await setup_artist_service.get_ten_most_popular_songs()
 
     assert isinstance(songs_treated_template, dict)
 
 
 @pytest.mark.asyncio
-@patch('src.services.artist.ArtistService._get_or_set_artist_songs_on_redis', return_value=stub_songs_treated_template)
-async def test_when_success_to_get_artist_then_returns_stub_correctly(mock_get_or_set_on_redis, setup_artist_service):
+@patch(
+    "src.services.artist.ArtistService._get_or_set_artist_songs_on_redis",
+    return_value=stub_treated_songs_template,
+)
+async def test_when_success_to_get_artist_then_returns_expected_result(
+    mock_get_or_set_on_redis, setup_artist_service
+):
     songs_treated_template = await setup_artist_service.get_ten_most_popular_songs()
 
-    song = songs_treated_template.get('top_ten_songs')[0]
+    song = songs_treated_template.get("top_ten_songs")[0]
     assert song.get("artist_name") == "Justin Bieber"
     assert song.get("title") == "Despacito (Remix)"
-    assert song.get("full_title") == "Despacito (Remix) by Luis Fonsi & Daddy Yankee (Ft. Justin Bieber)"
-    assert song.get("url_song") == "https://genius.com/Luis-fonsi-and-daddy-yankee-despacito-remix-lyrics"
+    assert (
+        song.get("full_title")
+        == "Despacito (Remix) by Luis Fonsi & Daddy Yankee (Ft. Justin Bieber)"
+    )
+    assert (
+        song.get("url_song")
+        == "https://genius.com/Luis-fonsi-and-daddy-yankee-despacito-remix-lyrics"
+    )
     assert song.get("release_date") == "April 17, 2017"
-    assert song.get("song_art_image_url") == "https://images.genius.com/4164dff756ddd455675789bd67fe5f1a.1000x1000x1.png"
+    assert (
+        song.get("song_art_image_url")
+        == "https://images.genius.com/4164dff756ddd455675789bd67fe5f1a.1000x1000x1.png"
+    )
 
 
 @pytest.mark.asyncio
-@patch('src.services.artist.ArtistService._get_or_set_artist_songs_on_redis', return_value=stub_songs_treated_template)
-async def test_when_success_to_get_artist_then_mock_was_called(mock_get_or_set_on_redis, setup_artist_service):
+@patch(
+    "src.services.artist.ArtistService._get_or_set_artist_songs_on_redis",
+    return_value=stub_treated_songs_template,
+)
+async def test_when_success_to_get_artist_then_mock_was_called(
+    mock_get_or_set_on_redis, setup_artist_service
+):
     songs_treated_template = await setup_artist_service.get_ten_most_popular_songs()
 
     mock_get_or_set_on_redis.assert_called_once_with()
 
 
 @pytest.mark.asyncio
-@patch('src.services.artist.ArtistService._clean_up_redis_and_save_on_dynamo', return_value=stub_songs_treated_template)
+@patch(
+    "src.services.artist.ArtistService._clean_up_redis_and_save_on_dynamo",
+    return_value=stub_treated_songs_template,
+)
 async def test_when_success_to_get_artist_and_cache_false_then_returns_ten_most_popular_songs(
-        mock_clean_up_redis_and_save_on_dynamo,
-        setup_artist_service
+    mock_clean_up_redis_and_save_on_dynamo, setup_artist_service
 ):
     setup_artist_service.cache = False
     songs_treated_template = await setup_artist_service.get_ten_most_popular_songs()
@@ -51,28 +81,38 @@ async def test_when_success_to_get_artist_and_cache_false_then_returns_ten_most_
 
 
 @pytest.mark.asyncio
-@patch('src.services.artist.ArtistService._clean_up_redis_and_save_on_dynamo', return_value=stub_songs_treated_template)
-async def test_when_success_to_get_artist_and_cache_false_then_returns_stub_correctly(
-        mock_clean_up_redis_and_save_on_dynamo,
-        setup_artist_service
+@patch(
+    "src.services.artist.ArtistService._clean_up_redis_and_save_on_dynamo",
+    return_value=stub_treated_songs_template,
+)
+async def test_when_success_to_get_artist_and_cache_false_then_returns_expected_result(
+    mock_clean_up_redis_and_save_on_dynamo, setup_artist_service
 ):
     setup_artist_service.cache = False
     songs_treated_template = await setup_artist_service.get_ten_most_popular_songs()
 
-    song = songs_treated_template.get('top_ten_songs')[1]
+    song = songs_treated_template.get("top_ten_songs")[1]
     assert song.get("artist_name") == "Justin Bieber"
     assert song.get("title") == "I’m the One"
-    assert song.get("full_title") == "I'm the One by DJ Khaled (Ft. Chance the Rapper, Justin Bieber, Lil Wayne & Quavo)"
+    assert (
+        song.get("full_title")
+        == "I'm the One by DJ Khaled (Ft. Chance the Rapper, Justin Bieber, Lil Wayne & Quavo)"
+    )
     assert song.get("url_song") == "https://genius.com/Dj-khaled-im-the-one-lyrics"
     assert song.get("release_date") == "April 28, 2017"
-    assert song.get("song_art_image_url") == "https://images.genius.com/6127733e5dbc43f75fcbf1b92e48a068.1000x1000x1.png"
+    assert (
+        song.get("song_art_image_url")
+        == "https://images.genius.com/6127733e5dbc43f75fcbf1b92e48a068.1000x1000x1.png"
+    )
 
 
 @pytest.mark.asyncio
-@patch('src.services.artist.ArtistService._clean_up_redis_and_save_on_dynamo', return_value=stub_songs_treated_template)
+@patch(
+    "src.services.artist.ArtistService._clean_up_redis_and_save_on_dynamo",
+    return_value=stub_treated_songs_template,
+)
 async def test_when_success_to_get_artist_and_cache_false_then_mock_was_called(
-        mock_clean_up_redis_and_save_on_dynamo,
-        setup_artist_service
+    mock_clean_up_redis_and_save_on_dynamo, setup_artist_service
 ):
     setup_artist_service.cache = False
     songs_treated_template = await setup_artist_service.get_ten_most_popular_songs()
@@ -81,24 +121,117 @@ async def test_when_success_to_get_artist_and_cache_false_then_mock_was_called(
 
 
 @pytest.mark.asyncio
-@patch('src.services.artist.DynamodbRepository.put_items')
-@patch('src.services.artist.MusicApi.get_ten_most_popular_musics_on_genius',
-       return_value=stub_songs_result_genius)
-@patch('src.services.artist.RedisRepository.delete')
-async def test_when_cleanup_function_then_returns_treated_songs(mock_redis, mock_genius_api, mock_dynamodb, setup_artist_service):
-    songs_treated_template = await setup_artist_service._clean_up_redis_and_save_on_dynamo()
+@patch("src.services.artist.DynamodbRepository.put_items")
+@patch(
+    "src.services.artist.MusicApi.get_ten_most_popular_musics_on_genius",
+    return_value=stub_songs_result_genius,
+)
+@patch("src.services.artist.RedisRepository.delete")
+async def test_when_cleanup_function_then_returns_treated_songs(
+    mock_redis, mock_genius_api, mock_dynamodb, setup_artist_service
+):
+    songs_treated_template = (
+        await setup_artist_service._clean_up_redis_and_save_on_dynamo()
+    )
 
     assert isinstance(songs_treated_template, dict)
 
 
 @pytest.mark.asyncio
-@patch('src.services.artist.DynamodbRepository.put_items')
-@patch('src.services.artist.MusicApi.get_ten_most_popular_musics_on_genius',
-       return_value=stub_songs_result_genius)
-@patch('src.services.artist.RedisRepository.delete')
-async def test_when_cleanup_function_then_mock_was_called(mock_redis, mock_genius_api, mock_dynamodb, setup_artist_service):
-    songs_treated_template = await setup_artist_service._clean_up_redis_and_save_on_dynamo()
+@patch("src.services.artist.DynamodbRepository.put_items")
+@patch(
+    "src.services.artist.MusicApi.get_ten_most_popular_musics_on_genius",
+    return_value=stub_songs_result_genius,
+)
+@patch("src.services.artist.RedisRepository.delete")
+async def test_when_cleanup_function_then_returns_expected_result(
+    mock_redis, mock_genius_api, mock_dynamodb, setup_artist_service
+):
+    songs_treated_template = (
+        await setup_artist_service._clean_up_redis_and_save_on_dynamo()
+    )
 
-    mock_redis.assert_called_once_with(key='12345')
-    mock_genius_api.assert_called_once_with(artist_id=12345)
+    assert songs_treated_template == stub_treated_songs_template
+
+
+@pytest.mark.asyncio
+@patch("src.services.artist.DynamodbRepository.put_items")
+@patch(
+    "src.services.artist.MusicApi.get_ten_most_popular_musics_on_genius",
+    return_value=stub_songs_result_genius,
+)
+@patch("src.services.artist.RedisRepository.delete")
+async def test_when_cleanup_function_then_all_mock_was_called(
+    mock_redis, mock_genius_api, mock_dynamodb, setup_artist_service
+):
+    songs_treated_template = (
+        await setup_artist_service._clean_up_redis_and_save_on_dynamo()
+    )
+
+    mock_redis.assert_called_once_with(key="357")
+    mock_genius_api.assert_called_once_with(artist_id=357)
     mock_dynamodb.assert_called_once()
+
+
+@pytest.mark.asyncio
+@patch('src.services.artist.RedisRepository.set', return_value=False)
+@patch("src.services.artist.DynamodbRepository.put_items")
+@patch(
+    "src.services.artist.MusicApi.get_ten_most_popular_musics_on_genius",
+    return_value=stub_songs_result_genius,
+)
+@patch('src.services.artist.RedisRepository.get', return_value=False)
+async def test_when_set_artist_songs_then_returns_expected_result(mock_redis_get, mock_genius_api, mock_dynamodb, mock_redis_set, setup_artist_service):
+    songs_treated_template = await setup_artist_service._get_or_set_artist_songs_on_redis()
+
+    assert isinstance(songs_treated_template, dict)
+
+
+@pytest.mark.asyncio
+@patch('src.services.artist.RedisRepository.set', return_value=False)
+@patch("src.services.artist.DynamodbRepository.put_items")
+@patch(
+    "src.services.artist.MusicApi.get_ten_most_popular_musics_on_genius",
+    return_value=stub_songs_result_genius,
+)
+@patch('src.services.artist.RedisRepository.get', return_value=False)
+async def test_when_set_artist_songs_then_return_songs_treated_template(mock_redis_get, mock_genius_api, mock_dynamodb, mock_redis_set, setup_artist_service):
+    songs_treated_template = await setup_artist_service._get_or_set_artist_songs_on_redis()
+
+    assert songs_treated_template == stub_treated_songs_template
+
+
+@pytest.mark.asyncio
+@patch('src.services.artist.RedisRepository.get', return_value=stub_encode_result)
+async def teste_when_has_data_in_redis_then_returns_expected_result(mock_redis_get, setup_artist_service):
+    songs_treated_template = await setup_artist_service._get_or_set_artist_songs_on_redis()
+
+    assert isinstance(songs_treated_template, dict)
+
+
+@pytest.mark.asyncio
+@patch('src.services.artist.RedisRepository.get', return_value=stub_encode_result)
+async def teste_when_has_data_in_redis_then_returns_expected_values(mock_redis_get, setup_artist_service):
+    songs_treated_template = await setup_artist_service._get_or_set_artist_songs_on_redis()
+
+    song = songs_treated_template.get("top_ten_songs")[1]
+    assert song.get("artist_name") == "Justin Bieber"
+    assert song.get("title") == "I’m the One"
+    assert (
+            song.get("full_title")
+            == "I'm the One by DJ Khaled (Ft. Chance the Rapper, Justin Bieber, Lil Wayne & Quavo)"
+    )
+    assert song.get("url_song") == "https://genius.com/Dj-khaled-im-the-one-lyrics"
+    assert song.get("release_date") == "April 28, 2017"
+    assert (
+            song.get("song_art_image_url")
+            == "https://images.genius.com/6127733e5dbc43f75fcbf1b92e48a068.1000x1000x1.png"
+    )
+
+
+@pytest.mark.asyncio
+@patch('src.services.artist.RedisRepository.get', return_value=stub_encode_result)
+async def teste_when_has_data_in_redis_then_mock_was_called(mock_redis_get, setup_artist_service):
+    songs_treated_template = await setup_artist_service._get_or_set_artist_songs_on_redis()
+
+    mock_redis_get.assert_called_once_with(key='357')
