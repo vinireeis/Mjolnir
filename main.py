@@ -5,3 +5,6 @@ from src.controllers.controller import app
 from asgiref.wsgi import WsgiToAsgi
 
 asgi_app = WsgiToAsgi(app)
+
+
+app.run()

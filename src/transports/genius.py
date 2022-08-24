@@ -7,14 +7,14 @@ from http import HTTPStatus
 # Third party
 from decouple import config
 from loguru import logger
-import httpx
+from httpx import AsyncClient, Response
 
 
 class MusicApi:
     @staticmethod
     async def get_ten_most_popular_musics_on_genius(artist_id: int) -> dict:
         try:
-            async with httpx.AsyncClient() as client:
+            async with AsyncClient() as client:
                 request_response = await client.get(
                     f"https://{config('GENIUS_API_BASE_URL')}/artists/{artist_id}/songs",
                     headers={
@@ -22,7 +22,7 @@ class MusicApi:
                         "Host": config("GENIUS_API_BASE_URL"),
                         "Authorization": f"Bearer {config('GENIUS_CLIENT_ACCESS_TOKEN')}",
                     },
-                    params={"sort": config("GENIUS_SORTED"), "per_page": config("GENIUS_MUSICS_PER_PAGE")},
+                    params={"sort": config("GENIUS_SORTED"), "per_page": 10},
                 )
             await MusicApi.__result_map_from_request_response(
                 request_response=request_response
@@ -34,7 +34,7 @@ class MusicApi:
             raise PartnerError
 
     @staticmethod
-    async def __result_map_from_request_response(request_response: httpx.Response):
+    async def __result_map_from_request_response(request_response: Response):
         response_map = {
             HTTPStatus.INTERNAL_SERVER_ERROR: MusicApi.__raise_internal_server_error,
             HTTPStatus.BAD_REQUEST: MusicApi.__raise_bad_request,

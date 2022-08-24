@@ -90,7 +90,6 @@ async def test_when_success_to_get_artist_and_cache_false_then_returns_expected_
 ):
     setup_artist_service.cache = False
     songs_treated_template = await setup_artist_service.get_ten_most_popular_songs()
-
     song = songs_treated_template.get("top_ten_songs")[1]
     assert song.get("artist_name") == "Justin Bieber"
     assert song.get("title") == "I’m the One"
