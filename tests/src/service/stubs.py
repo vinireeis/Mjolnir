@@ -177,4 +177,3 @@ stub_songs_result_genius = {
 
 
 stub_encode_result = dumps(stub_treated_songs_template).encode(encoding="UTF-8")
-
